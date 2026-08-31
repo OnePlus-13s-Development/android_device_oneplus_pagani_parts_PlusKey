@@ -15,5 +15,6 @@
         <permission name="android.permission.GET_TASKS"/>
         <permission name="android.permission.REAL_GET_TASKS"/>
         <permission name="android.permission.INJECT_EVENTS"/>
+        <permission name="android.permission.READ_SEARCH_INDEXABLES"/>
     </privapp-permissions>
 </permissions>
