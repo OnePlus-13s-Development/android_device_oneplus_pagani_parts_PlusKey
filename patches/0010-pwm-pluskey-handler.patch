@@ -1,9 +1,9 @@
 diff --git a/services/core/java/com/android/server/policy/InfinitiPlusKey.java b/services/core/java/com/android/server/policy/InfinitiPlusKey.java
 new file mode 100644
-index 000000000..b60bff348
+index 000000000..94811b109
 --- /dev/null
 +++ b/services/core/java/com/android/server/policy/InfinitiPlusKey.java
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,93 @@
 +/*
 + * Copyright (C) 2026
 + * SPDX-License-Identifier: Apache-2.0
@@ -33,6 +33,8 @@ index 000000000..b60bff348
 +            "infiniti",
 +            "OP60FFL1",
 +            "OP611FL1",
++            "OP60F5L1",
++            "pagani",
 +    };
 +
 +    private static volatile Boolean sIsInfiniti;
@@ -96,51 +98,46 @@ index 000000000..b60bff348
 +    }
 +}
 diff --git a/services/core/java/com/android/server/policy/PhoneWindowManager.java b/services/core/java/com/android/server/policy/PhoneWindowManager.java
-index 590b5edf0..bf349ac20 100644
+index caf3c5860..c2940ffbb 100644
 --- a/services/core/java/com/android/server/policy/PhoneWindowManager.java
 +++ b/services/core/java/com/android/server/policy/PhoneWindowManager.java
-@@ -1875,6 +1875,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+@@ -608,6 +608,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+     boolean mWakeOnAssistKeyPress;
+     boolean mWakeOnBackKeyPress;
+     boolean mSilenceRingerOnSleepKey;
++    boolean mPlusKeyLongPressHandled;
++    private final Runnable mPlusKeyLongPressRunnable = () -> {
++        mPlusKeyLongPressHandled = true;
++        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, "Plus Key - Long Press");
++        InfinitiPlusKey.fireLongPress(mContext);
++    };
+     long mWakeUpToLastStateTimeout;
+     long mTurnOffTvToastSuppressionDelay;
+     long mTurnOffTvToastPostDelay;
+@@ -5049,6 +5055,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+             }
+             case KeyEvent.KEYCODE_ASSIST: {
+                 final boolean longPressed = event.getRepeatCount() > 0;
++                if (InfinitiPlusKey.isInfiniti()) {
++                    if (down && !longPressed) {
++                        mPlusKeyLongPressHandled = false;
++                        mHandler.postDelayed(mPlusKeyLongPressRunnable,
++                                ViewConfiguration.getLongPressTimeout());
++                    } else if (!down && !mPlusKeyLongPressHandled) {
++                        mHandler.removeCallbacks(mPlusKeyLongPressRunnable);
++                        cancelPreloadRecentApps();
++                        InfinitiPlusKey.fireShortPress(mContext);
++                    }
++                    result &= ~ACTION_PASS_TO_USER;
++                    break;
++                }
+                 if (down && !longPressed) {
+                     Message msg = mHandler.obtainMessage(MSG_LAUNCH_ASSIST, event.getDeviceId(),
+                             0 /* unused */, event.getEventTime() /* eventTime */);
+@@ -5162,6 +5181,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      }
  
-     private void assistPress() {
-+    	if (InfinitiPlusKey.isInfiniti()) {
-+    	    cancelPreloadRecentApps();
-+    	    InfinitiPlusKey.fireShortPress(mContext);
-+    	    return;
-+    	}
-+    	
-         if (!keyguardOn() && mAssistPressAction != Action.NOTHING) {
-             if (mAssistPressAction != Action.APP_SWITCH) {
-                 cancelPreloadRecentApps();
-@@ -1890,6 +1896,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
-     }
- 
-     private void assistLongPress() {
-+    	if (InfinitiPlusKey.isInfiniti()) {
-+    	    cancelPreloadRecentApps();
-+    	    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS,
-+                    "Plus Key - Long Press");
-+    	    InfinitiPlusKey.fireLongPress(mContext);
-+    	    return;
-+    	}
-+    	
-         if (!keyguardOn() && mAssistLongPressAction != Action.NOTHING) {
-             if (mAssistLongPressAction != Action.APP_SWITCH) {
-                 cancelPreloadRecentApps();
-@@ -3173,7 +3187,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
- 
-         @Override
-         boolean supportLongPress() {
--            return mAssistLongPressAction != Action.NOTHING;
-+            return InfinitiPlusKey.isInfiniti()
-+                    || mAssistLongPressAction != Action.NOTHING;
-         }
- 
-         @Override
-@@ -5917,6 +5932,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
-     }
- 
-     private void handleKeyGesture(KeyEvent event, boolean interactive, boolean defaultDisplayOn) {
+     private void handleKeyGesture(KeyEvent event, boolean interactive, int defaultDisplayState) {
 +        if (InfinitiPlusKey.isInfiniti()
 +                && event.getKeyCode() == KeyEvent.KEYCODE_ASSIST) {
 +            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
@@ -153,3 +150,6 @@ index 590b5edf0..bf349ac20 100644
          if (event.getKeyCode() == KEYCODE_POWER && event.getAction() == KeyEvent.ACTION_DOWN) {
              mPowerKeyHandled = handleCameraGesture(event, interactive);
              if (mPowerKeyHandled) {
+-- 
+2.47.3
+

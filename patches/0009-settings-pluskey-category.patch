@@ -25,25 +25,25 @@ index 0000000..0b0eb33
 +        android:pathData="M11,10h2v4h-2z" />
 +</vector>
 diff --git a/res/values/strings.xml b/res/values/strings.xml
-index 5479e7e..a09f51b 100644
+index 3221d0e..470ce02 100644
 --- a/res/values/strings.xml
 +++ b/res/values/strings.xml
-@@ -14958,4 +14958,8 @@
- 
-     <!-- String for talkback on the account avatar of the search bar.  [CHAR LIMIT=NONE] -->
-     <string name="search_bar_account_avatar_content_description"></string>
+@@ -15590,4 +15590,8 @@
+     <!-- Search keywords for Human interface device access setting -->
+     <string name="keywords_access_hid">hid, human, access, device</string>
+     <!-- Access HID end -->
 +    
 +    <!-- Plus Key -->
 +    <string name="top_level_pluskey_title">Plus Key</string>
 +    <string name="top_level_pluskey_summary">Customize the side button</string>
  </resources>
 diff --git a/res/xml/top_level_settings.xml b/res/xml/top_level_settings.xml
-index 51e4b1a..ac30d1a 100644
+index 93f4c9f..009caa2 100644
 --- a/res/xml/top_level_settings.xml
 +++ b/res/xml/top_level_settings.xml
-@@ -57,31 +57,45 @@
+@@ -56,31 +56,45 @@
+         android:key="top_level_personalize_category"
          android:layout="@layout/settingslib_expressive_untitled_preference_category">
- 
          <com.android.settings.widget.HomepagePreference
 -            android:fragment="com.android.settings.applications.AppDashboardFragment"
 -            android:icon="@drawable/ic_apps_filled"
@@ -106,7 +106,7 @@ index 51e4b1a..ac30d1a 100644
  
          <com.android.settings.widget.RestrictedHomepagePreference
              android:fragment="com.android.settings.notification.modes.ZenModesListFragment"
-@@ -104,23 +118,13 @@
+@@ -103,23 +117,13 @@
              settings:controller="com.android.settings.communal.CommunalPreferenceController"/>
  
          <com.android.settings.widget.HomepagePreference
@@ -136,7 +136,7 @@ index 51e4b1a..ac30d1a 100644
      </PreferenceCategory>
  
      <PreferenceCategory
-@@ -265,4 +269,4 @@
+@@ -275,4 +279,4 @@
              settings:controller="com.android.settings.support.SupportPreferenceController"/>
      </PreferenceCategory>
  
@@ -144,12 +144,12 @@ index 51e4b1a..ac30d1a 100644
 \ No newline at end of file
 +</PreferenceScreen>
 diff --git a/res/xml/top_level_settings_expressive.xml b/res/xml/top_level_settings_expressive.xml
-index b83ec93..70e34fb 100644
+index dc7afc7..e296271 100644
 --- a/res/xml/top_level_settings_expressive.xml
 +++ b/res/xml/top_level_settings_expressive.xml
-@@ -89,6 +89,19 @@
-             settings:highlightableMenuKey="@string/menu_key_wallpaper"
-             settings:controller="com.android.settings.display.TopLevelWallpaperPreferenceController"/>
+@@ -88,6 +88,19 @@
+             settings:highlightableMenuKey="@string/menu_key_priority_modes"
+             settings:controller="com.android.settings.notification.modes.ZenModesLinkPreferenceController"/>
  
 +        <com.android.settings.widget.HomepagePreference
 +            android:icon="@drawable/ic_settings_pluskey"
@@ -165,5 +165,8 @@ index b83ec93..70e34fb 100644
 +        </com.android.settings.widget.HomepagePreference>
 +
          <com.android.settings.widget.HomepagePreference
-             android:fragment="com.android.settings.applications.AppDashboardFragment"
-             android:icon="@drawable/ic_apps_filled"
+             android:fragment="com.android.settings.communal.CommunalDashboardFragment"
+             android:icon="@drawable/ic_homepage_hub_mode"
+-- 
+2.47.3
+
